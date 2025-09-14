@@ -8,36 +8,19 @@
     <link rel="stylesheet" href="TemplateData/style.css">
   </head>
 <script>
-  function resizeCanvas() {
+  function resizeCanvasFull() {
     var canvas = document.getElementById("unity-canvas");
-
-    // 画面サイズ
-    let windowWidth = window.innerWidth;
-    let windowHeight = window.innerHeight;
-
-    // Unityの想定アスペクト比
-    let targetRatio = 1920 / 1080;
-    let windowRatio = windowWidth / windowHeight;
-
-    if (windowRatio > targetRatio) {
-      // 横長 → 高さに合わせる
-      canvas.height = windowHeight;
-      canvas.width = windowHeight * targetRatio;
-    } else {
-      // 縦長 → 幅に合わせる
-      canvas.width = windowWidth;
-      canvas.height = windowWidth / targetRatio;
-    }
-
-    // 中央寄せ
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     canvas.style.position = "absolute";
-    canvas.style.left = ((windowWidth - canvas.width) / 2) + "px";
-    canvas.style.top = ((windowHeight - canvas.height) / 2) + "px";
+    canvas.style.left = "0px";
+    canvas.style.top = "0px";
   }
 
-  window.addEventListener("resize", resizeCanvas);
-  window.addEventListener("load", resizeCanvas);
+  window.addEventListener("resize", resizeCanvasFull);
+  window.addEventListener("load", resizeCanvasFull);
 </script>
+
 
   <body>
     <div id="unity-container" class="unity-desktop">
