@@ -8,22 +8,18 @@
     <link rel="stylesheet" href="TemplateData/style.css">
   </head>
 <script>
-  function resizeCanvasFull(scale = 1.0) {
+  function resizeCanvasFull() {
     var canvas = document.getElementById("unity-canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     canvas.style.position = "absolute";
     canvas.style.left = "0px";
     canvas.style.top = "0px";
-    canvas.style.transformOrigin = "top left"; // 拡大縮小の基準点を左上に
-    canvas.style.transform = "scale(" + scale + ")";
   }
 
-  // ページ読み込み時と画面リサイズ時に呼ぶ
-  window.addEventListener("resize", function() { resizeCanvasFull(0.9); }); 
-  window.addEventListener("load", function() { resizeCanvasFull(0.9); });
+  window.addEventListener("resize", resizeCanvasFull);
+  window.addEventListener("load", resizeCanvasFull);
 </script>
-
 
 
   <body>
