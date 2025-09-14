@@ -12,8 +12,7 @@
         padding: 0;
         width: 100%;
         height: 100%;
-        overflow: hidden;
-        background: #000;
+        overflow: hidden; /* スクロールバー非表示 */
       }
 
       #unity-container {
@@ -22,11 +21,13 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background: #000;
+        background: #000; /* 黒背景 */
       }
 
       #unity-canvas {
         display: block;
+        max-width: 100%;
+        max-height: 100%;
       }
     </style>
   </head>
@@ -41,7 +42,7 @@
           <div id="unity-progress-bar-full"></div>
         </div>
       </div>
-      <div id="unity-warning"></div>
+      <div id="unity-warning"> </div>
       <div id="unity-footer">
         <div id="unity-logo-title-footer"></div>
         <div id="unity-fullscreen-button"></div>
@@ -50,58 +51,53 @@
     </div>
 
     <script>
-      const canvas = document.getElementById("unity-canvas");
-      const container = document.getElementById("unity-container");
-      const gameWidth = 960;
-      const gameHeight = 600;
-      const gameRatio = gameWidth / gameHeight;
-
-      // Canvas リサイズ関数
+      // Canvas のリサイズ
       function resizeCanvas() {
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-        const windowRatio = windowWidth / windowHeight;
+        const canvas = document.getElementById("unity-canvas");
+        const windowRatio = window.innerWidth / window.innerHeight;
+        const gameRatio = 960 / 600;
 
-        let width, height;
         if (windowRatio > gameRatio) {
-          height = windowHeight;
-          width = height * gameRatio;
+          // 横長画面 → 高さ基準
+          canvas.style.height = window.innerHeight + "px";
+          canvas.style.width = (window.innerHeight * gameRatio) + "px";
         } else {
-          width = windowWidth;
-          height = width / gameRatio;
+          // 縦長画面 → 幅基準
+          canvas.style.width = window.innerWidth + "px";
+          canvas.style.height = (window.innerWidth / gameRatio) + "px";
         }
-
-        canvas.style.width = width + "px";
-        canvas.style.height = height + "px";
-        container.style.width = width + "px";
-        container.style.height = height + "px";
       }
 
-      // 初期呼び出し & リサイズ時
       window.addEventListener("load", resizeCanvas);
       window.addEventListener("resize", resizeCanvas);
 
-      // --- Unity バナー ---
+      var canvas = document.querySelector("#unity-canvas");
+
+      // 警告バナー
       function unityShowBanner(msg, type) {
-        const warningBanner = document.getElementById("unity-warning");
-        const div = document.createElement('div');
+        var warningBanner = document.querySelector("#unity-warning");
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
         div.innerHTML = msg;
         warningBanner.appendChild(div);
-
-        if (type === 'error') div.style = 'background: red; padding: 10px;';
-        else if (type === 'warning') div.style = 'background: yellow; padding: 10px;';
-
-        setTimeout(() => {
-          if (warningBanner.contains(div)) warningBanner.removeChild(div);
-        }, 5000);
-
-        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
       }
 
-      // --- Unity WebGL 設定 ---
-      const buildUrl = "Build";
-      const loaderUrl = buildUrl + "/WebGLBuild.loader.js";
-      const config = {
+      // Unity WebGL 読み込み
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/WebGLBuild.loader.js";
+      var config = {
+        arguments: [],
         dataUrl: buildUrl + "/WebGLBuild.data.gz",
         frameworkUrl: buildUrl + "/WebGLBuild.framework.js.gz",
         codeUrl: buildUrl + "/WebGLBuild.wasm.gz",
@@ -109,46 +105,41 @@
         companyName: "DefaultCompany",
         productName: "Disney_Drive",
         productVersion: "1.0",
-        showBanner: unityShowBanner,
-        arguments: []
+        showBanner: unityShowBanner
       };
 
       // モバイル判定
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        const meta = document.createElement('meta');
+        var meta = document.createElement('meta');
         meta.name = 'viewport';
         meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.head.appendChild(meta);
-        container.className = "unity-mobile";
+        document.getElementsByTagName('head')[0].appendChild(meta);
+        document.querySelector("#unity-container").className = "unity-mobile";
         canvas.className = "unity-mobile";
       } else {
-        canvas.style.width = gameWidth + "px";
-        canvas.style.height = gameHeight + "px";
+        // Desktop
+        canvas.style.width = "1980px";
+        canvas.style.height = "1020px";
       }
 
-      document.getElementById("unity-loading-bar").style.display = "block";
+      document.querySelector("#unity-loading-bar").style.display = "block";
 
-      // Unity ローダー読み込み
-      const script = document.createElement("script");
+      var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
-          document.getElementById("unity-progress-bar-full").style.width = 100 * progress + "%";
+          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
         }).then((unityInstance) => {
-          document.getElementById("unity-loading-bar").style.display = "none";
-          document.getElementById("unity-fullscreen-button").onclick = () => {
+          document.querySelector("#unity-loading-bar").style.display = "none";
+          document.querySelector("#unity-fullscreen-button").onclick = () => {
             unityInstance.SetFullscreen(1);
           };
-
-          // --- シーン切替に備えて毎フレーム Canvas サイズを更新 ---
-          function tick() { resizeCanvas(); requestAnimationFrame(tick); }
-          tick();
-
-        }).catch((err) => {
-          alert(err);
+        }).catch((message) => {
+          alert(message);
         });
       };
       document.body.appendChild(script);
+
     </script>
   </body>
 </html>
