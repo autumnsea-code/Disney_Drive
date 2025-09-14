@@ -7,26 +7,37 @@
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
   </head>
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden; /* スクロールバーを消す */
+<script>
+  function resizeCanvas() {
+    var canvas = document.getElementById("unity-canvas");
+
+    // 画面サイズ
+    let windowWidth = window.innerWidth;
+    let windowHeight = window.innerHeight;
+
+    // Unityの想定アスペクト比
+    let targetRatio = 1920 / 1080;
+    let windowRatio = windowWidth / windowHeight;
+
+    if (windowRatio > targetRatio) {
+      // 横長 → 高さに合わせる
+      canvas.height = windowHeight;
+      canvas.width = windowHeight * targetRatio;
+    } else {
+      // 縦長 → 幅に合わせる
+      canvas.width = windowWidth;
+      canvas.height = windowWidth / targetRatio;
+    }
+
+    // 中央寄せ
+    canvas.style.position = "absolute";
+    canvas.style.left = ((windowWidth - canvas.width) / 2) + "px";
+    canvas.style.top = ((windowHeight - canvas.height) / 2) + "px";
   }
-  #unity-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  #unity-canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-</style>
+
+  window.addEventListener("resize", resizeCanvas);
+  window.addEventListener("load", resizeCanvas);
+</script>
 
   <body>
     <div id="unity-container" class="unity-desktop">
