@@ -7,30 +7,51 @@
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
   </head>
-<script>
-function resizeCanvas(scale = 1.0) {
-  var canvas = document.getElementById("unity-canvas");
-  
-  // 画面のアスペクト比に合わせて縮小・拡大
-  var windowRatio = window.innerWidth / window.innerHeight;
-  var gameRatio = 960 / 600; // WebGL ビルドの縦横比
-
-  if(windowRatio > gameRatio){
-    // 画面が横長の場合（幅が余る）
-    canvas.style.width = (window.innerHeight * gameRatio * scale) + "px";
-    canvas.style.height = (window.innerHeight * scale) + "px";
-  } else {
-    // 画面が縦長の場合（高さが余る）
-    canvas.style.width = (window.innerWidth * scale) + "px";
-    canvas.style.height = (window.innerWidth / gameRatio * scale) + "px";
-  }
-  canvas.style.transformOrigin = "top left";
-  canvas.style.transform = "scale(1)";
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
 }
 
-// ページ読み込み時と画面回転・リサイズ時に呼ぶ
-window.addEventListener("load", function(){ resizeCanvas(1.0); });
-window.addEventListener("resize", function(){ resizeCanvas(1.0); });
+#unity-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#unity-canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+}
+</style>
+
+<script>
+function resizeCanvas() {
+    const canvas = document.getElementById("unity-canvas");
+    const windowRatio = window.innerWidth / window.innerHeight;
+    const gameRatio = 960 / 600; // WebGL 元サイズ
+
+    if (windowRatio > gameRatio) {
+        // 横長画面 → 高さ基準
+        canvas.style.height = window.innerHeight + "px";
+        canvas.style.width = (window.innerHeight * gameRatio) + "px";
+    } else {
+        // 縦長画面 → 幅基準
+        canvas.style.width = window.innerWidth + "px";
+        canvas.style.height = (window.innerWidth / gameRatio) + "px";
+    }
+}
+
+// 読み込み時・リサイズ時に呼び出し
+window.addEventListener("load", resizeCanvas);
+window.addEventListener("resize", resizeCanvas);
 </script>
 
 
