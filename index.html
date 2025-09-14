@@ -8,28 +8,27 @@
     <link rel="stylesheet" href="TemplateData/style.css">
   </head>
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #000;
-}
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden; /* スクロールバーを消す */
+  }
 
-#unity-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  #unity-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black; /* 黒帯用 */
+  }
 
-#unity-canvas {
-  display: block;
-  max-width: 100%;
-  max-height: 100%;
-}
+  #unity-canvas {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+  }
 </style>
 
 <script>
@@ -101,6 +100,37 @@ window.addEventListener("resize", resizeCanvas);
         }
         updateBannerVisibility();
       }
+
+  function resizeUnityCanvas() {
+    const canvas = document.getElementById("unity-canvas");
+    const container = document.getElementById("unity-container");
+
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    const gameWidth = 960;
+    const gameHeight = 600;
+    const gameAspect = gameWidth / gameHeight;
+
+    const windowAspect = windowWidth / windowHeight;
+
+    let scale;
+    if (windowAspect > gameAspect) {
+      scale = windowHeight / gameHeight;
+    } else {
+      scale = windowWidth / gameWidth;
+    }
+
+    // canvas と container にサイズを反映
+    canvas.style.width = gameWidth * scale + "px";
+    canvas.style.height = gameHeight * scale + "px";
+    container.style.width = canvas.style.width;
+    container.style.height = canvas.style.height;
+  }
+
+  window.addEventListener("resize", resizeUnityCanvas);
+  resizeUnityCanvas();
+</script>
 
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/WebGLBuild.loader.js";
