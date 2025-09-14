@@ -7,19 +7,27 @@
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
   </head>
-<script>
-  function resizeCanvasFull() {
-    var canvas = document.getElementById("unity-canvas");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    canvas.style.position = "absolute";
-    canvas.style.left = "0px";
-    canvas.style.top = "0px";
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden; /* スクロールバーを消す */
   }
+  #unity-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #unity-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>
 
-  window.addEventListener("resize", resizeCanvasFull);
-  window.addEventListener("load", resizeCanvasFull);
-</script>
 
 
   <body>
